@@ -1,0 +1,70 @@
+{
+  "raw_data_dir": "data",
+  "source": {
+    "provider": "Dukascopy/JForex",
+    "timestamp_column": "Time (EET)",
+    "timestamp_format": "%Y.%m.%d %H:%M:%S.%f",
+    "source_timezone": "Europe/Helsinki",
+    "source_timezone_verified": true,
+    "displayed_size_units": null,
+    "combined_snapshots": true,
+    "timezone_validation_scope": "Selected spring/autumn weekend boundaries in 2016, 2019, 2021, 2023 and 2025; full-history checks remain pending."
+  },
+  "pip_size": 0.0001,
+  "audit_sample_rows": 10000,
+  "ingestion": {
+    "source_file": "EURUSD_Ticks_2016.01.04_2017.01.02.csv",
+    "day_start_utc": "2016-01-05T00:00:00Z",
+    "day_end_utc": "2016-01-06T00:00:00Z",
+    "month_start_utc": "2016-01-01T00:00:00Z",
+    "month_end_utc": "2016-02-01T00:00:00Z",
+    "csv_block_bytes": 4194304,
+    "gap_audit_seconds": 30,
+    "extreme_spread_audit_pips": 20
+  },
+  "sampling_features": {
+    "pip_size": 0.0001,
+    "max_staleness_seconds": 5,
+    "substantial_gap_seconds": 30,
+    "return_windows_seconds": [
+      1,
+      5,
+      30,
+      60
+    ],
+    "volatility_windows_seconds": [
+      60,
+      300
+    ],
+    "activity_windows_seconds": [
+      1,
+      5,
+      30,
+      60,
+      300
+    ],
+    "change_windows_seconds": [
+      1,
+      5
+    ],
+    "observed_price_change_window_seconds": 300,
+    "wide_spread_review_pips": 20,
+    "london_session_start_hour": 8,
+    "london_session_end_hour": 17,
+    "new_york_session_start_hour": 8,
+    "new_york_session_end_hour": 17,
+    "block_hours": 6,
+    "max_quotes_per_block": 750000,
+    "max_grid_rows_per_block": 100000,
+    "duckdb_memory_limit": "256MB",
+    "duckdb_temp_limit": "4GB"
+  },
+  "sustained_wide_spread_review": {
+    "spread_pips_threshold": 20,
+    "continuous_duration_seconds_threshold": 1200,
+    "comparison": "strictly_greater",
+    "requires_fresh_quote_coverage": true,
+    "action": "investigate",
+    "implementation_status": "pending_liquidity_episode_analysis"
+  }
+}

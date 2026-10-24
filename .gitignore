@@ -1,0 +1,29 @@
+# Historical and generated data
+/data/*
+!/data/sample/
+/data/sample/*
+!/data/sample/synthetic_quotes.csv
+/EURUSD_Ticks_*.csv
+/artifacts/
+/reports/private/
+/reports/figures/
+/reports/tables/
+
+# Local settings and common credential files
+/configs/research_config.local.json
+.env
+.env.*
+*.pem
+*.key
+credentials/
+
+# Python and notebook caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+build/
+dist/
