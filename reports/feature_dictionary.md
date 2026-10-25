@@ -35,3 +35,34 @@ No forecasting benefit or calibrated fair value has been established.
 A spread above 20 pips for more than 1200 continuous seconds is the
 owner's proposed investigation criterion. Its episode analysis remains
 pending; it is not an exclusion rule here.
+
+<!-- BEGIN STALENESS_30S -->
+## Current snapshot eligibility policy
+
+Raymond Fendi selected a maximum accepted snapshot age of 30 seconds.
+Ages up to and including 30 seconds are accepted when prices are valid.
+Source gaps exceeding 30 seconds still break return continuity.
+
+January was regenerated from the same ingestion generation:
+1,550,700 usable-price rows under the
+five-second rule versus 1,693,556
+under the thirty-second rule. The original generation is retained.
+
+The earlier Notebook 02 coverage figures describe the five-second baseline.
+The shared configuration now specifies thirty seconds for future processing.
+Full-history regeneration remains pending.
+
+Automated validation: 23 passed in 3.35s; the exact thirty-second
+boundary check passed. This records execution evidence, not a new owner
+code-review confirmation.
+
+The proposed ten-second-return replacement was superseded; one-second-return volatility is retained.
+Results pending execution and validation.
+<!-- END STALENESS_30S -->
+
+<!-- VOLATILITY_DECISION:BEGIN -->
+### Confirmed volatility specification
+
+Retain realized volatility from one-second mid-price changes over 60-
+and 300-second trailing windows. No ten-second-return replacement is active.
+<!-- VOLATILITY_DECISION:END -->

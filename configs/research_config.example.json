@@ -1,41 +1,104 @@
 {
-  "raw_data_dir": "data",
-  "source": {
-    "provider": "Dukascopy/JForex",
-    "timestamp_column": "Time (EET)",
-    "timestamp_format": "%Y.%m.%d %H:%M:%S.%f",
-    "source_timezone": "Europe/Helsinki",
-    "source_timezone_verified": true,
-    "displayed_size_units": null,
-    "combined_snapshots": true,
-    "timezone_validation_scope": "Selected spring/autumn weekend boundaries in 2016, 2019, 2021, 2023 and 2025; full-history checks remain pending."
-  },
-  "pip_size": 0.0001,
   "audit_sample_rows": 10000,
-  "ingestion": {
-    "source_file": "EURUSD_Ticks_2016.01.04_2017.01.02.csv",
-    "day_start_utc": "2016-01-05T00:00:00Z",
-    "day_end_utc": "2016-01-06T00:00:00Z",
-    "month_start_utc": "2016-01-01T00:00:00Z",
-    "month_end_utc": "2016-02-01T00:00:00Z",
-    "csv_block_bytes": 4194304,
-    "gap_audit_seconds": 30,
-    "extreme_spread_audit_pips": 20
+  "baseline_models": {
+    "forecast_buckets": 5,
+    "max_combined_frame_mib": 256,
+    "max_frame_mib": 192,
+    "max_rows_per_split": 300000,
+    "minimum_fit_rows": 1000,
+    "price_features": [
+      "spread_pips",
+      "mid_change_1s_pips",
+      "mid_change_5s_pips",
+      "mid_change_30s_pips",
+      "mid_change_60s_pips",
+      "realized_vol_60s_pips",
+      "realized_vol_300s_pips",
+      "spread_change_1s_pips",
+      "spread_change_5s_pips",
+      "snapshot_staleness_seconds",
+      "bid_price_change_age_seconds",
+      "ask_price_change_age_seconds",
+      "utc_time_sin",
+      "utc_time_cos",
+      "london_time_sin",
+      "london_time_cos",
+      "new_york_time_sin",
+      "new_york_time_cos"
+    ],
+    "required_current_size_features": [
+      "bid_size",
+      "ask_size",
+      "size_imbalance",
+      "size_weighted_minus_mid_pips"
+    ],
+    "ridge_alpha": 10.0,
+    "size_features": [
+      "bid_size",
+      "ask_size",
+      "size_imbalance",
+      "size_weighted_minus_mid_pips",
+      "bid_size_change_1s",
+      "ask_size_change_1s",
+      "bid_size_change_5s",
+      "ask_size_change_5s"
+    ],
+    "training_active_dates": 3,
+    "validation_active_dates": 2
   },
-  "sampling_features": {
-    "pip_size": 0.0001,
-    "max_staleness_seconds": 5,
-    "substantial_gap_seconds": 30,
-    "return_windows_seconds": [
+  "full_history_audit": {
+    "checkpoint_batches": 16,
+    "max_gap_examples": 20,
+    "max_unassigned_examples": 5,
+    "maximum_dataframe_mib": 128,
+    "maximum_source_files": 20,
+    "maximum_total_source_gib": 100,
+    "output_estimate_multiplier": 2.0,
+    "planning_training_windows_days": [
+      30,
+      90,
+      180,
+      365
+    ],
+    "progress_batches": 128,
+    "scratch_reserve_gib": 8
+  },
+  "ingestion": {
+    "csv_block_bytes": 4194304,
+    "day_end_utc": "2016-01-06T00:00:00Z",
+    "day_start_utc": "2016-01-05T00:00:00Z",
+    "extreme_spread_audit_pips": 20,
+    "gap_audit_seconds": 30,
+    "month_end_utc": "2016-02-01T00:00:00Z",
+    "month_start_utc": "2016-01-01T00:00:00Z",
+    "source_file": "EURUSD_Ticks_2016.01.04_2017.01.02.csv"
+  },
+  "labels_validation": {
+    "block_hours": 6,
+    "horizons_seconds": [
       1,
       5,
       30,
       60
     ],
-    "volatility_windows_seconds": [
-      60,
-      300
-    ],
+    "max_rows_per_block": 100000,
+    "pilot_training_fraction": 0.6,
+    "pilot_validation_fraction": 0.2
+  },
+  "liquidity_regimes": {
+    "block_hours": 6,
+    "high_quantile": 0.95,
+    "lookback_seconds": 60,
+    "low_quantile": 0.1,
+    "max_combined_frame_mib": 192,
+    "max_frame_mib": 128,
+    "max_rows_per_scope": 300500,
+    "minimum_training_rows": 1000,
+    "small_group_row_threshold": 1000
+  },
+  "pip_size": 0.0001,
+  "raw_data_dir": "data",
+  "sampling_features": {
     "activity_windows_seconds": [
       1,
       5,
@@ -43,28 +106,66 @@
       60,
       300
     ],
+    "block_hours": 6,
     "change_windows_seconds": [
       1,
       5
     ],
-    "observed_price_change_window_seconds": 300,
-    "wide_spread_review_pips": 20,
-    "london_session_start_hour": 8,
-    "london_session_end_hour": 17,
-    "new_york_session_start_hour": 8,
-    "new_york_session_end_hour": 17,
-    "block_hours": 6,
-    "max_quotes_per_block": 750000,
-    "max_grid_rows_per_block": 100000,
     "duckdb_memory_limit": "256MB",
-    "duckdb_temp_limit": "4GB"
+    "duckdb_temp_limit": "4GB",
+    "london_session_end_hour": 17,
+    "london_session_start_hour": 8,
+    "max_grid_rows_per_block": 100000,
+    "max_quotes_per_block": 750000,
+    "max_staleness_seconds": 30,
+    "new_york_session_end_hour": 17,
+    "new_york_session_start_hour": 8,
+    "observed_price_change_window_seconds": 300,
+    "pip_size": 0.0001,
+    "return_windows_seconds": [
+      1,
+      5,
+      30,
+      60
+    ],
+    "substantial_gap_seconds": 30,
+    "volatility_windows_seconds": [
+      60,
+      300
+    ],
+    "wide_spread_review_pips": 20
+  },
+  "source": {
+    "combined_snapshots": true,
+    "displayed_size_units": null,
+    "provider": "Dukascopy/JForex",
+    "source_timezone": "Europe/Helsinki",
+    "source_timezone_verified": true,
+    "timestamp_column": "Time (EET)",
+    "timestamp_format": "%Y.%m.%d %H:%M:%S.%f",
+    "timezone_validation_scope": "Selected spring/autumn weekend boundaries in 2016, 2019, 2021, 2023 and 2025; full-history checks remain pending."
   },
   "sustained_wide_spread_review": {
-    "spread_pips_threshold": 20,
-    "continuous_duration_seconds_threshold": 1200,
-    "comparison": "strictly_greater",
-    "requires_fresh_quote_coverage": true,
     "action": "investigate",
-    "implementation_status": "pending_liquidity_episode_analysis"
+    "comparison": "strictly_greater",
+    "continuous_duration_seconds_threshold": 1200,
+    "implementation_status": "pending_liquidity_episode_analysis",
+    "requires_fresh_quote_coverage": true,
+    "spread_pips_threshold": 20
+  },
+  "walk_forward": {
+    "bootstrap_block_dates": [
+      2,
+      3
+    ],
+    "bootstrap_repetitions": 1000,
+    "confidence": 0.95,
+    "evaluation_calendar_days": 1,
+    "max_folds": 31,
+    "minimum_bootstrap_dates": 10,
+    "minimum_evaluation_price_rows": 1000,
+    "minimum_training_price_rows": 1000,
+    "random_seed": 42,
+    "training_calendar_days": 3
   }
 }
