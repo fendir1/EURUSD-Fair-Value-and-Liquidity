@@ -130,7 +130,7 @@ boundary check passed. This records execution evidence, not a new owner
 code-review confirmation.
 
 The proposed ten-second-return replacement was superseded; one-second-return volatility is retained.
-Results pending execution and validation.
+Measured results are recorded in the generated completion section below.
 <!-- END STALENESS_30S -->
 
 <!-- NOTEBOOK_03:BEGIN -->
@@ -162,7 +162,7 @@ Notebook 03 owner review remains pending. Full-history processing,
 final-test dates, model fitting, predictive evaluation, and sustained
 wide-spread episode analysis remain pending.
 
-Results pending execution and validation.
+Measured results are recorded in the generated completion section below.
 <!-- NOTEBOOK_03:END -->
 
 <!-- NOTEBOOK_05:BEGIN -->
@@ -223,3 +223,48 @@ output sizes or peak-memory benchmarks.
 
 H001 remains untested. Notebook 07 owner review remains pending.
 <!-- NOTEBOOK_07:END -->
+
+<!-- NOTEBOOK_08:BEGIN -->
+### Notebook 08 — full-history canonical ingestion
+
+Converted the audited, nonoverlapping exports to resumable source Parquet
+generations using the existing validated ingestion implementation.
+
+The canonical collection references each selected source partition once.
+Small immutable overlays correct first-quote gap context at later source
+boundaries. Original source partitions and pilot generations are preserved.
+
+No price, size, locked-quote, or wide-spread observations were removed.
+
+Portable collection paths are repository-relative. A separate ignored local
+binding supports existing feature-generation APIs.
+
+Executed correctness checks: 73 passed in 7.67s.
+Canonical row counts, quality flags, yearly counts, source boundaries,
+partition schemas, and integrity checks passed.
+
+A separate full-history final-test date reservation was recorded using the
+last 12 complete UTC calendar months. No predictive final evaluation
+was executed. The January pilot plan remains separate.
+
+Full-history features, labels, longer-window development evaluation,
+H001 testing, final model freezing, and final interpretation remain pending.
+Notebook 08 owner review remains pending.
+<!-- NOTEBOOK_08:END -->
+
+<!-- COMPLETION_RESULTS_START -->
+## Completion-stage quality checks
+
+Canonical quotes: 293,093,358.
+Research clock rows: 339,033,600.
+Research range: 2016-01-03T00:00:00+00:00 to 2026-10-01T00:00:00+00:00, end exclusive.
+
+Cross-source context and continuous-versus-block checks passed.
+Wide-spread investigation: {"wide_quote_rows": 478, "episodes": 100, "episodes_over_20_minutes": 0, "maximum_observed_duration_seconds": 337.115, "automatic_exclusions": 0}.
+
+Wide spreads, locked quotes, and zero-size observations remain in canonical data.
+Feature and label eligibility is separate from raw quality flags.
+Coverage tables report the resulting populations.
+
+Timestamp and displayed-size limitations remain documented in the research results.
+<!-- COMPLETION_RESULTS_END -->

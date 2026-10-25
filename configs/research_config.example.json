@@ -63,6 +63,12 @@
     "progress_batches": 128,
     "scratch_reserve_gib": 8
   },
+  "history_ingestion": {
+    "final_test_complete_months": 12,
+    "minimum_free_gib": 16,
+    "quote_storage_multiplier": 2.0,
+    "scratch_reserve_gib": 8
+  },
   "ingestion": {
     "csv_block_bytes": 4194304,
     "day_end_utc": "2016-01-06T00:00:00Z",

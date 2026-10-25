@@ -75,7 +75,7 @@ boundary check passed. This records execution evidence, not a new owner
 code-review confirmation.
 
 The proposed ten-second-return replacement was superseded; one-second-return volatility is retained.
-Results pending execution and validation.
+Measured results are recorded in the generated completion section below.
 <!-- END STALENESS_30S -->
 
 <!-- NOTEBOOK_03:BEGIN -->
@@ -143,3 +143,38 @@ Results pending execution and validation.
 - Source issue resolution and owner review: pending.
 - No full-history model or dedicated H001 test was executed.
 <!-- NOTEBOOK_07:END -->
+
+<!-- NOTEBOOK_08:BEGIN -->
+### Notebook 08
+
+- Raymond Fendi requested the full-history ingestion notebook.
+- OpenAI Codex supplied the collection helpers, boundary overlays,
+  tests, and documentation.
+- Executed correctness checks: 73 passed in 7.67s.
+- All audited records were retained and canonical counts reconciled.
+- Full-history test dates were reserved without predictive evaluation.
+- Notebook 08 owner review and understanding checkpoint: pending.
+- No H001-specific test or full-history forecast model was executed.
+<!-- NOTEBOOK_08:END -->
+
+<!-- COMPLETION_RESULTS_START -->
+## Completion run `66d2e5a9ff903fe48113c6ea`
+
+Raymond Fendi defined the objectives, supplied FX domain direction, selected
+the 30-second snapshot policy, retained one-second-return volatility, and
+explained the cross-file gap checkpoint.
+
+OpenAI Codex provided the Notebook 09 implementation and documentation.
+
+Recorded execution evidence:
+- 79 passed in 8.77s.
+- Full research dataset generated with bounded processing.
+- Annual development evaluation and frozen final test executed.
+- Matched comparisons and uncertainty tables generated.
+- Wide-spread episode investigation completed.
+
+This execution record is based on automated notebook checks.
+Owner review, interpretation, and approval of Notebook 09 remain pending.
+
+H001 remains recorded and untested.
+<!-- COMPLETION_RESULTS_END -->

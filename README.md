@@ -1,268 +1,148 @@
-# EURUSD Fair-Value and Liquidity Research
+# EURUSD Fair Value and Liquidity Research
 
-## Purpose and business relevance
+[Read the four-page project guide](reports/EURUSD_research_plain_language_guide.pdf)
 
-Investigate short-horizon EURUSD price changes, liquidity deterioration, and possible electronic-pricing implications.
+A plain language project presentation and column reference
 
-## Data and units
+### Objective and the decisions it could inform
 
-Dukascopy/JForex Level 1 exports. EURUSD pip size is 0.0001. Source timezone/DST interpretation and displayed-size denomination remain unresolved.
+We asked whether euro-dollar quotes and the quantities displayed beside them help predict price changes over the next 1, 5, 30, or 60 seconds, and identify conditions in which trading becomes harder or riskier.
 
-## Observed information and limitations
+A dealer normally offers one price to buy euros and another to sell them. A reliable upward forecast could support moving both quoted prices upward; signs of thinner or less stable trading could support quoting smaller amounts, widening the buy-sell gap, or requesting a fresh price. These were potential decisions to investigate, not strategies proved profitable by this project.
 
-This is a research prototype. Displayed sizes are not executed trade volumes. A single feed does not represent the entire FX market. Predictive accuracy does not establish achievable trading profits.
+| Expected research outcome | Potential trading decision |
+| --- | --- |
+| A reliable short-term price forecast | Adjust the reference price around which buy and sell quotes are set. |
+| A useful warning about liquidity | Review quote size, quote width, or whether the displayed price is fresh enough. |
+| Evidence that displayed size adds information | Include size in the pricing signal only if its contribution is reliable and meaningful. |
 
-## Repository structure
+### What the initial data contain
 
-notebooks/: research steps; src/: reusable modules; configs/: settings; data/: local datasets and safe synthetic samples; tests/: correctness checks; reports/: findings; artifacts/: generated execution evidence and models.
+The starting point was seven Dukascopy exports downloaded through JForex: **293,093,358 quote records**, occupying about **14.50 GB** of CSV files. Their observed times run from January 3, 2016, to October 16, 2026, in UTC.
 
-## Setup
+Each tick is one combined bid-and-ask snapshot with a timestamp, two prices, and two displayed quantities. It is not a completed trade. The records arrive at irregular intervals; some consecutive records can repeat the same prices.
 
-Notebook 00 uses Python's standard library. Research dependencies and the editable package will be established before Notebook 01 imports project code.
+The source header says Time (EET). The workflow interprets it using Europe/Helsinki daylight-saving rules, then converts to UTC; the documented verification limits remain. The displayed-size unit has not been independently confirmed. One feed does not describe the entire currency market.
 
-## Notebook execution order
+### A simple example
 
-00 environment/data audit → 01 ingestion/quality → 02 sampling/features → 03 labels/splits → 04 baselines → 05 regimes → 06 walk-forward evaluation → 07 interpretation.
+A bid of 1.1000 and an ask of 1.1002 imply a midpoint of 1.1001 and a spread of 2 pips. The midpoint is a convenient reference; a trader generally cannot buy and sell at that midpoint.
 
-## Methodology
+## How the project worked and what it found
 
-Currently implemented: bounded source inspection and prefix-quality diagnostics. Causal sampling, labels, models, and evaluation remain pending.
+### From irregular ticks to comparable observations
 
-## Validation
+The workflow kept one research row per second, always using the latest quote already observed. Quotes older than 30 seconds were unavailable. It calculated recent price behavior and size measures, then recorded the actual future price change at each forecast horizon. Gaps interrupt calculations that require a continuous price path.
 
-Notebook 00 records execution observations. Third-party imports, research tests, full-history quality, and owner review remain pending.
+The completed research dataset has **339,033,600 clock rows**, with **235,598,561 usable current-price rows**. It ends before October 1, 2026; the remaining partial October source month was not scored.
 
-## Results
+### Four forecasting methods
 
-Results pending execution and validation.
+**Zero change** predicts no move. **Trailing return** predicts a repeat of the recent move. **Price-only Ridge** learns a restrained linear combination of price and time features. **Price-plus-size Ridge** adds displayed-size features to the otherwise matched model.
 
-## Development approach
+Models learned from up to 365 preceding calendar days. Nine chronological development periods covered 2017 through September 2025. Choices were then frozen before the final test, October 2025 through September 2026; training and evaluation label intervals were kept separate.
 
-Development approach: This is an AI-assisted research project.
-Raymond Fendi defined the business objectives and provided FX domain
-direction. OpenAI Codex assisted with implementation, testing, and
-documentation. CONTRIBUTIONS.md records completed design decisions,
-reviews, and validation.
+### Final test results
 
-## Next steps
+| Horizon | Zero MAE | Size model MAE | Zero RMSE | Size model RMSE |
+| --- | --- | --- | --- | --- |
+| 1 sec | 0.056418 | 0.057664 | 0.144122 | 0.144049 |
+| 5 sec | 0.178874 | 0.179710 | 0.328184 | 0.328135 |
+| 30 sec | 0.528175 | 0.528705 | 0.828463 | 0.828519 |
+| 60 sec | 0.779690 | 0.780176 | 1.197345 | 1.197447 |
 
-Review Notebook 00 outputs, resolve source assumptions, prepare the package, and begin synthetic and bounded ingestion checks.
+All errors are in pips; lower is better. MAE is the average mistake size. RMSE gives larger mistakes extra weight.
 
-<!-- BEGIN NOTEBOOK01 -->
-## Implemented ingestion workflow
+**No-change had the lowest MAE at every horizon.** The size model slightly improved RMSE over no-change at 1 and 5 seconds, by about 0.05% and 0.015%; it did not improve the longer horizons. Adding size worsened the aggregate development errors, so its contribution was not consistent across development and final testing.
 
-The project now provides an editable src-layout package, synthetic
-quotes, bounded CSV-to-Parquet ingestion, UTC year/month partitions,
-source provenance, resumable batch manifests, and quality diagnostics.
+### What this means for trading decisions
 
-From an active Jupyter kernel, installation uses its Python executable
-with `-m pip install --editable <repository>[test]`.
+These results do not establish a dependable practical advantage for forecast-driven quote changes. The liquidity measures can describe conditions for further investigation, but no execution, costs, fill probability, or inventory policy was tested. Displayed size does not by itself confirm that trades occurred or that a trend will continue.
 
-Notebook 01 runs focused tests, a synthetic example, a pilot day, and
-the available January 2016 data. Later notebooks consume the selected
-manifest recorded in ignored local configuration.
+The project passed **79 correctness tests**. Its 478 raw wide-spread quotes formed 100 observed episodes; none lasted over 20 minutes under the defined continuity rule. No wide-spread observations were automatically removed. H001, the specific size-and-trend hypothesis, remains untested.
 
-Historical quotes are preserved with quality flags. Unassignable
-timestamps are stored separately. Overlapping pilot and month datasets
-must not be concatenated.
+## Important market data columns
 
-Environment versions are recorded locally after successful execution.
-Owner review remains pending.
+One actual saved observation from October 1, 2025. Values are rounded for readability; this single example illustrates the columns and is not evidence of typical performance.
 
-Results pending execution and validation.
-<!-- END NOTEBOOK01 -->
+| Column name | Saved example value | What the value means |
+| --- | --- | --- |
+| Time (EET) -> timestamp_source | 2025.10.01 03:00:09.860 | Original quote time. Here 03:00:09.860 local time becomes 00:00:09.860 UTC. |
+| Ask -> ask | 1.17341 | A buyer could see an asking price of 1.17341 US dollars per euro on this feed. |
+| Bid -> bid | 1.17336 | A seller could see a bid of 1.17336 US dollars per euro on this feed. |
+| AskVolume -> ask_size | 0.9 | Quantity displayed at the ask. Its denomination is unconfirmed; this is not completed trade volume. |
+| BidVolume -> bid_size | 1.8 | Quantity displayed at the bid. Here the displayed bid quantity is twice the ask quantity. |
+| mid_price | 1.173385 | Average of bid and ask, used as the reference price. It is not a guaranteed execution price. |
+| spread_pips | 0.50 pips | The buy-sell price gap is half a pip. One pip equals 0.0001 dollars per euro. |
+| feature_timestamp_utc / source_timestamp_utc | 00:00:10 / 00:00:09.860 | Research clock time and the latest source quote already known at that time. Both are UTC. |
+| snapshot_staleness_seconds | 0.14 seconds | The quote is 0.14 seconds old at the research time, below the 30-second maximum. |
+| price_valid | True | The current quote passes the price and age rules. This does not establish whether it can be traded. |
+| size_imbalance | +0.3333 | More size is displayed at the bid: (1.8 minus 0.9) divided by 2.7. Positive imbalance does not prove the next move will be up. |
+| size_weighted_quote_price / size_weighted_minus_mid_pips | 1.17339333 / +0.083333 pips | The size-weighted candidate price is 0.083333 pips above the midpoint. It is not a proven fair value. |
+| mid_change_5s_pips | -0.15 pips | The midpoint fell 0.15 pips over the preceding five seconds. This describes the past. |
+| realized_vol_60s_pips / metric_volatility_pips | 1.078193 pips | Summarizes movement over the previous 60 seconds using squared one-second changes. It is not a forecast for the next minute. |
+| snapshot_count_60s / metric_quote_count | 30 | Thirty quote records arrived in the preceding 60 seconds. This is quote activity, not a trade count. |
+| metric_spread_mean_pips | 0.418333 pips | Average spread during the preceding 60 seconds, compared with the current spread of 0.50 pips. |
+| metric_min_side_size_mean | 0.93 | Average of the smaller displayed side quantity over the past 60 seconds, in the unconfirmed source units. |
+| liquidity_regime | normal | Neither the stressed nor thin rule triggered here. This category is not a guarantee that trading is safe. |
+| session | other | Outside both defined London and New York sessions: local weekday hours 08:00 to 17:00. |
 
-<!-- BEGIN NOTEBOOK02 -->
-## Implemented sampling and features
+## Important forecast and result columns
 
-Notebook 02 creates a one-second UTC grid from manifest-selected quotes.
-Sampling is backward-looking, with explicit staleness and continuity
-checks. Prices become unavailable when the latest state is unusable.
+The same observation, with a five-second forecast horizon. Other saved horizons are 1, 30, and 60 seconds; their column names follow the same pattern.
 
-Features include prices, spreads, displayed sizes, imbalance,
-size-weighted quote displacement, trailing price changes and log returns,
-realized volatility, snapshot activity, spread/size changes, time features,
-and bounded observed price-change ages.
+| Column name | Saved example value | What the value means |
+| --- | --- | --- |
+| horizon_seconds | 5 seconds | How far ahead the forecast looks; the suffix 5s means the same thing. |
+| target_timestamp_utc_5s / target_source_timestamp_utc_5s | 00:00:15 / 00:00:14.702 | Exact future assessment time and the last quote observed before it. Both are UTC; no later quote is substituted. |
+| target_mid_price_5s | 1.173345 | The midpoint observed at the five-second target, using the permitted source quote. |
+| label_5s_pips / actual_5s | -0.40 pips | The actual future midpoint fell 0.40 pips from 1.173385 to 1.173345. This is an outcome, not a predictor. |
+| label_valid_5s | True | The current and target prices, plus the intervening path, pass the label rules. |
+| eligible_5s | True | This row also passes the shared model-comparison rules, including required sizes and the evaluation boundary. |
+| zero_5s | 0.00 pips | The simplest benchmark predicts no change. |
+| trailing_5s | -0.15 pips | The recent-move benchmark predicts another 0.15-pip fall, repeating the preceding five-second move. |
+| ridge_price_5s | -0.012716 pips | The price-only model predicts a small fall, about 0.012716 pips. |
+| ridge_price_size_5s | -0.010545 pips | Adding displayed-size features changes the prediction to a fall of about 0.010545 pips. |
 
-See reports/feature_dictionary.md for units and window definitions.
-The active month feature manifest is recorded in ignored local configuration.
+### Whole final test results for the five second size model
 
-Tests cover financial units, temporal alignment, future-append causality,
-processing boundaries, DST-aware local times, and checkpoint recovery.
+These values summarize the full final-test sample, not the single observation above. Error differences below compare the size model with the price-only model.
 
-Results pending execution and validation.
-<!-- END NOTEBOOK02 -->
+| Column name | Saved example value | What the value means |
+| --- | --- | --- |
+| phase / rows | final_test / 21,586,600 | The reserved final test, with 21,586,600 shared observations for the five-second model comparison. |
+| mae_pips | 0.179710 pips | Average mistake size was about 0.18 pips, regardless of direction. Lower is better. |
+| rmse_pips | 0.328135 pips | Error measure giving extra weight to larger mistakes. Lower is better. |
+| delta_mae_size_minus_price_pips | +0.000116 pips | Positive means adding size increased average absolute error slightly. |
+| delta_rmse_size_minus_price_pips | -0.000055 pips | Negative means adding size reduced this error measure slightly. It does not establish an executable trading benefit. |
 
-<!-- BEGIN STALENESS_30S -->
-## Current snapshot eligibility policy
+### Project record
 
-Raymond Fendi selected a maximum accepted snapshot age of 30 seconds.
-Ages up to and including 30 seconds are accepted when prices are valid.
-Source gaps exceeding 30 seconds still break return continuity.
+Values come from the completed Notebook 09 run 66d2e5a9ff903fe48113c6ea and its saved research, forecast, and evaluation outputs. The earlier January pilot is superseded for full-history conclusions.
 
-January was regenerated from the same ingestion generation:
-1,550,700 usable-price rows under the
-five-second rule versus 1,693,556
-under the thirty-second rule. The original generation is retained.
+Development approach: This is an AI-assisted research project. Raymond Fendi defined the business objectives and provided FX domain direction. OpenAI Codex assisted with implementation, testing, and documentation. CONTRIBUTIONS.md records completed design decisions, reviews, and validation.
 
-The earlier Notebook 02 coverage figures describe the five-second baseline.
-The shared configuration now specifies thirty seconds for future processing.
-Full-history regeneration remains pending.
+## Reproduce the research
 
-Automated validation: 23 passed in 3.35s; the exact thirty-second
-boundary check passed. This records execution evidence, not a new owner
-code-review confirmation.
+Use the active Jupyter kernel environment and install the editable package when setting up a new environment:
 
-The proposed ten-second-return replacement was superseded; one-second-return volatility is retained.
-Results pending execution and validation.
-<!-- END STALENESS_30S -->
+```bash
+python -m pip install -e ".[modeling,test,notebooks]"
+python -m pytest tests -q
+```
 
-<!-- NOTEBOOK_03:BEGIN -->
-### Notebook 03 — labels and pilot splits
+Copy `configs/research_config.example.json` to the ignored `configs/research_config.local.json` and set `raw_data_dir` to your own source-data location. Notebook 00 documents the environment and source checks. Run notebooks 00 through 09 in order, using their documented setup cells and stopping at failed checks.
 
-Implemented exact 1-, 5-, 30-, and 60-second forward mid-price changes in
-pips, with backward-constructed endpoint states and explicit price-path
-validity checks.
+| Directory | Purpose |
+| --- | --- |
+| `notebooks/` | Research steps and explanations, numbered 00 through 09. |
+| `src/eurusd_research/` | Reusable ingestion, feature, label, model, and evaluation calculations. |
+| `tests/` | Financial and temporal correctness tests. |
+| `configs/` | Safe example settings; personal settings remain ignored. |
+| `data/sample/` | Small synthetic demonstration data suitable for Git. |
+| `reports/` | Project guide, aggregate results, and documentation. |
+| `data/` and `artifacts/` | Large local data, checkpoints, models, and forecasts; excluded from Git except the synthetic sample. |
 
-Snapshot ages up to 30 seconds are accepted. A source gap strictly greater
-than 30 seconds breaks the price path. Wide spreads are not automatically
-excluded.
+The source tick history is not distributed in this repository. Rebuilding the complete results requires the source data and substantial runtime and disk space. Notebook outputs are cleared in Git; completed aggregate results remain in `reports/final_aggregate_metrics.csv` and `reports/research_results.md`.
 
-The owner confirmed retention of volatility calculated from one-second
-returns. The earlier proposed ten-second-return implementation is superseded.
-
-Same-source-record endpoints are identified separately. These observations
-may have zero labels because the sampled snapshot was carried forward.
-
-Pilot split dates are selected chronologically from observed current-price
-coverage. Label intervals reaching the next period are purged. January's
-pilot holdout is not the full-history final test.
-
-Execution checks: 35 passed in 2.73s; the independently generated day and month
-have identical overlapping label rows. Target timing, source causality,
-staleness, grid conservation, and split-purge checks passed.
-
-Notebook 03 owner review remains pending. Full-history processing,
-final-test dates, model fitting, predictive evaluation, and sustained
-wide-spread episode analysis remain pending.
-
-Results pending execution and validation.
-<!-- NOTEBOOK_03:END -->
-
-<!-- NOTEBOOK_04:BEGIN -->
-### Notebook 04 — development baselines
-
-Implemented zero-change and trailing-return forecasts, plus training-only
-imputation, scaling, and Ridge regression.
-
-Price-only and price-plus-size Ridge models use identical training and
-validation observations. Price and size coverage are reported separately.
-Alpha is fixed at 10.0; no tuning was performed.
-
-A small development sample is selected from current-price coverage.
-The pilot holdout is not loaded or evaluated.
-
-Validation includes MAE, RMSE, descriptive calibration, training-defined
-forecast buckets, spread-scale comparisons, hourly diagnostics, and
-same-source-record endpoint diagnostics.
-
-Automated execution checks: 45 passed in 3.92s.
-Private execution reports contain the measured development metrics.
-Notebook 04 owner review remains pending.
-
-These short-sample comparisons do not establish statistical significance,
-full-history stability, or achievable trading profits.
-
-Full walk-forward and final-test research results remain pending execution
-and validation.
-<!-- NOTEBOOK_04:END -->
-
-<!-- NOTEBOOK_05:BEGIN -->
-### Notebook 05 — transparent liquidity regimes
-
-Implemented trailing spread, volatility, minimum-side displayed size,
-and source-snapshot activity metrics with a 60-second lookback.
-
-Thresholds are fitted on the saved development training window only.
-High spread or volatility takes precedence over low depth or activity.
-Current invalid prices are unavailable; incomplete metric sets are unclassified.
-A zero current displayed size on either side is a thin condition when
-the complete classification is available.
-
-Continuous metrics and overlapping rule flags are preserved.
-A stressed classification is not a data exclusion.
-
-The unchanged Notebook 04 forecasts are evaluated by current regime.
-Grouped errors reconcile with the original aggregate errors.
-The pilot holdout is not loaded or evaluated.
-
-Executed correctness checks: 52 passed in 6.63s.
-Real-data processing-boundary and future-append checks passed.
-Notebook 05 owner review remains pending.
-
-H001, displayed size conditional on a preceding price move, is recorded
-in reports/research_hypotheses.md for later testing. No dedicated H001
-experiment was executed here.
-
-Size denomination and true quote ages remain unresolved.
-The sustained-wide-spread episode investigation remains pending.
-Full walk-forward uncertainty and final-test results remain pending.
-<!-- NOTEBOOK_05:END -->
-
-<!-- NOTEBOOK_06:BEGIN -->
-### Notebook 06 — January development walk-forward pilot
-
-Implemented rolling chronological folds using the preceding
-3 calendar days for training and
-one following UTC day for evaluation.
-
-Each fold independently fits preprocessing, Ridge models, regime thresholds,
-and training-prediction bucket boundaries. Label intervals reaching fold
-boundaries are purged.
-
-Model feature families use identical training and evaluation observations.
-Completed folds are resumable with artifact integrity checks.
-
-Reports include aggregate and date/session/regime/freshness diagnostics,
-calibration, forecast buckets, spread-scale comparisons, and paired
-moving-block intervals using ordered evaluation-date loss totals.
-
-Intervals are exploratory given the short development sample and assumptions
-about time dependence. Subgroup intervals are not estimated.
-
-Executed correctness checks: 60 passed in 5.16s.
-Forecast uniqueness, coverage, chronology, and protected-boundary checks passed.
-Notebook 06 owner review remains pending.
-
-The reserved pilot holdout was not evaluated.
-This is not full-history final-test validation.
-Broader ingestion, multi-year stability, final-test dates, H001 testing,
-and sustained-wide-spread episode analysis remain pending.
-<!-- NOTEBOOK_06:END -->
-
-<!-- NOTEBOOK_07:BEGIN -->
-### Notebook 07 — full-history coverage and scaling preparation
-
-Completed bounded-memory source audits for 7 selected exports.
-The audit measures actual UTC coverage, daily/yearly record counts,
-quality flags, source-order gaps, adjacent exact-export duplicates,
-and possible cross-file range overlaps.
-
-Original CSVs are preserved. Changed source content has a distinct audit
-identity. Completed audit outputs are verified before reuse.
-
-Wide spreads and market-closure gaps are reported without automatic exclusion.
-Source-range overlaps do not prove identical records.
-
-Executed correctness checks: 66 passed in 5.34s.
-Source integrity and daily/source row conservation passed.
-
-The research sequence now includes full-history coverage and scale planning
-before final interpretation. Multi-source combination, longer-window
-training, multi-year evaluation, and untouched final testing remain pending.
-
-Resource projections are planning estimates, not measured full-history
-output sizes or peak-memory benchmarks.
-
-H001 remains untested. Notebook 07 owner review remains pending.
-<!-- NOTEBOOK_07:END -->
+The final test has been evaluated. Any later model selection must not describe these dates as an untouched test set. Owner review remains pending.
