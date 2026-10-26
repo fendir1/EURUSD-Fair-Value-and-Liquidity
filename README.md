@@ -18,11 +18,11 @@ A dealer normally offers one price to buy euros and another to sell them. A reli
 
 ### What the initial data contain
 
-The starting point was seven Dukascopy exports downloaded through JForex: **293,093,358 quote records**, occupying about **14.50 GB** of CSV files. Their observed times run from January 3, 2016, to October 16, 2026, in UTC.
+The starting point was seven Dukascopy exports **293,093,358 quote records**, occupying about **14.50 GB** of CSV files. Their observed times run from January 3, 2016, to October 16, 2026, in UTC.
 
 Each tick is one combined bid-and-ask snapshot with a timestamp, two prices, and two displayed quantities. It is not a completed trade. The records arrive at irregular intervals; some consecutive records can repeat the same prices.
 
-The source header says Time (EET). The workflow interprets it using Europe/Helsinki daylight-saving rules, then converts to UTC; the documented verification limits remain. The displayed-size unit has not been independently confirmed. One feed does not describe the entire currency market.
+The workflow interprets it using Europe/Helsinki daylight-saving rules, then converts to UTC; the documented verification limits remain. The displayed-size unit has not been independently confirmed. One feed does not describe the entire currency market.
 
 ### A simple example
 
@@ -57,13 +57,11 @@ All errors are in pips; lower is better. MAE is the average mistake size. RMSE g
 
 ### What this means for trading decisions
 
-These results do not establish a dependable practical advantage for forecast-driven quote changes. The liquidity measures can describe conditions for further investigation, but no execution, costs, fill probability, or inventory policy was tested. Displayed size does not by itself confirm that trades occurred or that a trend will continue.
-
-The project passed **79 correctness tests**. Its 478 raw wide-spread quotes formed 100 observed episodes; none lasted over 20 minutes under the defined continuity rule. No wide-spread observations were automatically removed. H001, the specific size-and-trend hypothesis, remains untested.
+These results do not establish a dependable practical advantage for forecast-driven quote changes. The liquidity measures can describe conditions for further investigation, but no execution, costs, fill probability, or inventory policy was tested.
 
 ## Important market data columns
 
-One actual saved observation from October 1, 2025. Values are rounded for readability; this single example illustrates the columns and is not evidence of typical performance.
+Values are rounded for readability; this single example illustrates the columns and is not evidence of typical performance.
 
 | Column name | Saved example value | What the value means |
 | --- | --- | --- |
@@ -120,28 +118,9 @@ These values summarize the full final-test sample, not the single observation ab
 
 Values come from the completed Notebook 09 run 66d2e5a9ff903fe48113c6ea and its saved research, forecast, and evaluation outputs. The earlier January pilot is superseded for full-history conclusions.
 
-Development approach: This is an AI-assisted research project. Raymond Fendi defined the business objectives and provided FX domain direction. OpenAI Codex assisted with implementation, testing, and documentation. CONTRIBUTIONS.md records completed design decisions, reviews, and validation.
+Development approach: This is an AI-assisted research project. Raymond Fendi defined the business objectives and provided FX domain direction. OpenAI Codex assisted with implementation and testing. 
 
 ## Reproduce the research
-
-Use the active Jupyter kernel environment and install the editable package when setting up a new environment:
-
-```bash
-python -m pip install -e ".[modeling,test,notebooks]"
-python -m pytest tests -q
-```
-
-Copy `configs/research_config.example.json` to the ignored `configs/research_config.local.json` and set `raw_data_dir` to your own source-data location. Notebook 00 documents the environment and source checks. Run notebooks 00 through 09 in order, using their documented setup cells and stopping at failed checks.
-
-| Directory | Purpose |
-| --- | --- |
-| `notebooks/` | Research steps and explanations, numbered 00 through 09. |
-| `src/eurusd_research/` | Reusable ingestion, feature, label, model, and evaluation calculations. |
-| `tests/` | Financial and temporal correctness tests. |
-| `configs/` | Safe example settings; personal settings remain ignored. |
-| `data/sample/` | Small synthetic demonstration data suitable for Git. |
-| `reports/` | Project guide, aggregate results, and documentation. |
-| `data/` and `artifacts/` | Large local data, checkpoints, models, and forecasts; excluded from Git except the synthetic sample. |
 
 The source tick history is not distributed in this repository. Rebuilding the complete results requires the source data and substantial runtime and disk space. Notebook outputs are cleared in Git; completed aggregate results remain in `reports/final_aggregate_metrics.csv` and `reports/research_results.md`.
 

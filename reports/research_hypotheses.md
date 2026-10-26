@@ -1,10 +1,3 @@
-
-
-<!-- H001:BEGIN -->
-# H001 — Displayed size conditional on a preceding price move
-
-Status: recorded for later development testing; not executed.
-
 Origin: Raymond Fendi proposed that a price move accompanied by substantial
 available size might carry information about continuation.
 
@@ -48,8 +41,6 @@ Evaluate incremental forecast errors and conditional continuation estimates.
 Use time-block uncertainty and report stability across development periods.
 Report freshness and carried-forward-snapshot sensitivity.
 
-The already inspected January 20–21 pilot is not fresh confirmation for H001.
-Do not use the reserved holdout to choose its specification.
 
 ## Observability limits
 
@@ -61,8 +52,3 @@ Persistence means persistence observed in this feed.
 Export size denomination remains unresolved.
 
 ## Execution and review
-
-No H001-specific model or statistical test has been executed.
-Notebook 05 regime diagnostics do not constitute this test.
-Owner review of a future implemented test remains pending.
-<!-- H001:END -->
