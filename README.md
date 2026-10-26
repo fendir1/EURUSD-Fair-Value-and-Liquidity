@@ -2,7 +2,9 @@
 
 [Read the four-page project guide](reports/EURUSD_research_plain_language_guide.pdf)
 
-A plain language project presentation and column reference
+Brief conclusion on findings:
+
+Across 20.22 million eligible final-test observations, the price-plus-size model’s 30-second prediction was within one pip of the actual midpoint 85.60% of the time. However, simply predicting no change achieved 86.43%, outperforming the model in every liquidity regime. The size model’s accuracy varied substantially: 96.02% in thin conditions, 84.23% in normal conditions, and 71.23% under stress. These results document useful differences in short-term price stability across conditions, but they do not demonstrate an advantage from the model’s predicted price adjustments. High accuracy in thin conditions also does not establish that trading was easy or executable. The defensible conclusion is that liquidity conditions matter for assessing short-term price risk, while the tested forecasting model adds no improvement over zero-change under this one-pip criterion. These percentages concern the 30-second endpoint, not the entire price path.
 
 ### Objective and the decisions it could inform
 
